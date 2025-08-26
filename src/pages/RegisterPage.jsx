@@ -37,7 +37,7 @@ const RegisterPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3004/api/v1/register",
+        "http://localhost:3004/api/v1/user/register",
         formData,
         {
           headers: {
@@ -174,9 +174,9 @@ const RegisterPage = () => {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
                 <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Others</option>
+                <option value="male">male</option>
+                <option value="female">female</option>
+                <option value="other">other</option>
               </select>
             </div>
             <div>

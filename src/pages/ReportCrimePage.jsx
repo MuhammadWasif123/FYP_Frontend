@@ -5,7 +5,7 @@ const ReportCrimePage = () => {
   return (
     <div>
       <h1>This is Crime Reporting Form Rendering Page</h1>
-      {/* <CrimeReportForm/> */}
+      <CrimeReportForm/>
     </div>
   )
 }

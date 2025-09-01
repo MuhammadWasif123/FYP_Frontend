@@ -43,7 +43,7 @@ const LoginPage = () => {
       
       setUser(response.data.data.loginUser);
 
-      console.log("user data:", response.data);
+      console.log("user data from login api:", response.data);
     } catch (error) {
       console.error(error);
       setMessage(error.response?.data?.message || "Login Failed");
@@ -58,7 +58,8 @@ const LoginPage = () => {
 
   return (
     <>
-      <div className="max-w-xl mx-auto p-6 bg-white shadow rounded">
+    <div className="bg-[#eedcdc] py-6 h-screen flex items-center justify-center">
+      <div className="min-w-xl mx-auto p-6 bg-white shadow rounded">
         <h2 className="text-3xl text-center">Login</h2>
         {message && <p className="mb-4 text-blue-700">{message}</p>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
@@ -102,11 +103,14 @@ const LoginPage = () => {
           </div>
           <button
             type="submit"
-            className="bg-primary text-white py-2 px-4 rounded bg-blue-900 transition"
+            className="bg-primary text-white py-2 px-4 rounded bg-blue-900 transition cursor-pointer"
           >
             Submit
           </button>
         </form>
+      </div>
+
+
       </div>
     </>
   );

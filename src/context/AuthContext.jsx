@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
 
         // console.log("Me API RESPONSE",res.data)
         setUser(res.data.data.user);
+         console.log("Fetched User in AuthContext:", res.data.data.user)
       } catch (err) {
         setUser(null);
       } finally {

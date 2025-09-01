@@ -1,42 +1,56 @@
 import React from "react";
-import RegisterPage from "./pages/RegisterPage";
-import LoginPage from "./pages/LoginPage";
 import { Routes, Route, Navigate } from "react-router";
-import ReportCrimePage from "./pages/ReportCrimePage";
-import HomePage from "./pages/HomePage";
 import { useAuth } from "./context/AuthContext";
+
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
+
+// Pages
+import HomePage from "./pages/HomePage";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import ReportCrimePage from "./pages/ReportCrimePage";
+import UserDashboard from "./pages/UserDashboard";
+import AdminDashboard from "./pages/AdminDashboard";  // 👉 Example admin page
+// import AdminReportsPage from "./pages/AdminReportsPage"; // 👉 Example admin reports page
 
 const App = () => {
   const { user } = useAuth();
+
   return (
     <>
       <Navbar />
       <div className="" style={{ fontFamily: "Inter, sans-serif" }}>
         <Routes>
-          {/* General Home Page Route for Every User */}
+          {/* ✅ Public Routes */}
           <Route path="/" element={<HomePage />} />
-
-          {/* These are the Guest User Routes */}
           <Route
             path="/login"
             element={user ? <Navigate to="/" /> : <LoginPage />}
           />
-           <Route
+          <Route
             path="/register"
             element={user ? <Navigate to="/" /> : <RegisterPage />}
           />
 
-          {/* Protected Route For the */}
+          {/* ✅ Protected Routes (for all logged-in users) */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/report-crime" element={<ReportCrimePage />} />
+            <Route path="/dashboard" element={<UserDashboard />} />
+            
+          </Route>
+
+          {/* ✅ Admin-only Routes (extra protection with role check) */}
           <Route
-            path="/report-crime"
-            element={
-              <ProtectedRoute>
-                <ReportCrimePage />
-              </ProtectedRoute>
-            }
-          />
+            element={<RoleProtectedRoute allowedRoles={["admin"]} />}
+          >
+            <Route path="/admin" element={<AdminDashboard />} />
+            {/* <Route path="/admin/reports" element={<AdminReportsPage />} /> */}
+          </Route>
+
+          {/* ✅ Catch-all for unknown routes */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </>

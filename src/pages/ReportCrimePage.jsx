@@ -3,8 +3,7 @@ import CrimeReportForm from "../components/ReportCrimePage/CrimeReportForm"
 
 const ReportCrimePage = () => {
   return (
-    <div>
-      <h1>This is Crime Reporting Form Rendering Page</h1>
+    <div className='bg-[#eedcdc] py-6'>
       <CrimeReportForm/>
     </div>
   )

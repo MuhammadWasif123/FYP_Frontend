@@ -53,6 +53,8 @@ const RegisterPage = () => {
   };
 
   return (
+    <>
+    <div className="bg-[#eedcdc] py-6">
     <div className="max-w-xl mx-auto p-6 bg-white shadow rounded">
       <h2 className="text-3xl text-center"> Register</h2>
       {message && <p className="mb-4 text-blue-700">{message}</p>}
@@ -255,6 +257,8 @@ const RegisterPage = () => {
           </button>
       </form>
     </div>
+    </div>
+    </>
   );
 };
 

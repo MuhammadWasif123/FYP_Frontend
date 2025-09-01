@@ -2,13 +2,13 @@
 import { useState } from "react";
 import axios from "axios";
 import AdminReportsTable from "../components/AdminComponent/AdminReportsTable";
-// import ReportModal from "../components/ReportModal"; // reuse your modal
+import ReportModal from "../components/UserDashboard/ReportModal"; // reuse your modal
 
 const AdminDashboard = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
-//   const [selectedReport, setSelectedReport] = useState(null);
+  const [selectedReport, setSelectedReport] = useState(null);
 
   const fetchReports = async () => {
     setLoading(true);
@@ -48,9 +48,9 @@ const AdminDashboard = () => {
 
       <AdminReportsTable reports={reports} onRowClick={(r) => setSelectedReport(r)} />
 
-      {/* {selectedReport && (
+      {selectedReport && (
         <ReportModal report={selectedReport} onClose={() => setSelectedReport(null)} />
-      )} */}
+      )}
     </div>
   );
 };

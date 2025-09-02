@@ -21,7 +21,7 @@ const AdminDashboard = () => {
   const [newStatus, setNewStatus] = useState("Pending");
   const [users, setUsers] = useState([]);
 
-  // Fetch all reports
+  // Fetch all reports User has added
   const fetchReports = async () => {
     setLoading(true);
     setMsg("");

@@ -75,7 +75,7 @@ const fetchReportById= async(id) =>{
           <button
             onClick={fetchReports}
             disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-60 my-4 mx-2"
+            className="bg-[#2b303a] text-white px-4 py-2 rounded disabled:opacity-60 my-4 mx-2 cursor-pointer"
           >
             {loading ? "Loading…" : "See all reports"}
           </button>

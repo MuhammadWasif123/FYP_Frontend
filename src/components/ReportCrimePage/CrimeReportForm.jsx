@@ -286,7 +286,7 @@ const CrimeReportForm = () => {
 
       <button
         type="submit"
-        className="bg-blue-900 text-white px-4 py-2 rounded"
+        className="bg-[#2b303a] text-white px-4 py-2 rounded cursor-pointer"
       >
         Submit Report
       </button>

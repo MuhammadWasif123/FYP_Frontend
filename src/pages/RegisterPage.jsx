@@ -251,7 +251,7 @@ const RegisterPage = () => {
         </div>
          <button
             type="submit"
-            className="bg-primary text-white py-2 px-4 rounded bg-blue-900 transition"
+            className="bg-primary text-white py-2 px-4 rounded bg-[#2b303a] transition"
           >
             Submit
           </button>

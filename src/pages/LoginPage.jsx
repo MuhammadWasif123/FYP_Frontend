@@ -103,7 +103,7 @@ const LoginPage = () => {
           </div>
           <button
             type="submit"
-            className="bg-primary text-white py-2 px-4 rounded bg-blue-900 transition cursor-pointer"
+            className="bg-primary text-white py-2 px-4 rounded bg-[#2b303a] transition cursor-pointer"
           >
             Submit
           </button>

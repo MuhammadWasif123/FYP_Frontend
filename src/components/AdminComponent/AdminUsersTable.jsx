@@ -2,6 +2,7 @@
 const fmt = (d) => (d ? new Date(d).toLocaleString() : "-");
 
 const AdminUsersTable = ({ users = [],onDeleteUser }) => {
+    console.log(users)
   if (!users || users.length === 0) {
     return (
       <div className="text-center text-gray-600 py-8">No users found.</div>
@@ -25,6 +26,8 @@ const AdminUsersTable = ({ users = [],onDeleteUser }) => {
         </thead>
         <tbody>
           {users.map((u) => (
+            
+
             <tr
               key={u.id}
               className="border-t hover:bg-gray-50"
@@ -36,7 +39,8 @@ const AdminUsersTable = ({ users = [],onDeleteUser }) => {
               <td className="p-3">{fmt(u.createdAt)}</td>
               <td className="p-3">
                 <button
-                  onClick={() => onDeleteUser?.(u.id)}
+                disabled={u.role=="admin"}
+                //   onClick={() => onDeleteUser?.(u.id)}
                   className="px-3 py-1 bg-[#2b303a] text-white rounded cursor-pointer hover:bg-red-700"
                 >
                   Delete

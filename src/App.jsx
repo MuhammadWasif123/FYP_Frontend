@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import VerifyOtpPage from "./pages/VerifyOtpPage";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -22,6 +23,8 @@ const App = () => {
   return (
     <>
       <Navbar />
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div className="" style={{ fontFamily: "Inter, sans-serif" }}>
         <Routes>
           {/* ✅ Public Routes */}
@@ -33,6 +36,10 @@ const App = () => {
           <Route
             path="/register"
             element={user ? <Navigate to="/" /> : <RegisterPage />}
+          />
+          <Route
+            path="/verify-otp"
+            element={<VerifyOtpPage />}
           />
 
           {/* ✅ Protected Routes (for all logged-in users) */}

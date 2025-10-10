@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const RegisterPage = () => {
   const [form, setForm] = useState({
@@ -117,11 +119,27 @@ const RegisterPage = () => {
         }
       );
       setMessage("Registered Successfully...");
-      navigate("/")
+      const userId = response.data.data.id;
+      // console.log("wasif response data testing",response.data.data.id)
+      navigate("/verify-otp", {
+        state: {
+          id: userId,
+          successMessage:
+            "Registration successfull! Please verify your OTP sent to your email.",
+        },
+      });
     } catch (error) {
-      console.error(error);
-      setMessage("Registration Failed...");
-    } finally{
+      // console.error("Error:", error.response?.data);
+      const backendErrorData = error.response?.data;
+      if (backendErrorData?.errors && backendErrorData.errors.length > 0) {
+        backendErrorData.errors.forEach((err) => {
+          toast.error(`${err.field}: ${err.message}`);
+        });
+      } else {
+        toast.error(backendErrorData?.message || "Something went wrong!");
+      }
+      setMessage(error.response?.data?.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -370,6 +388,16 @@ const RegisterPage = () => {
             >
               Submit
             </button>
+
+            <p className="text-sm text-gray-600 text-center mt-4">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-blue-600 font-semibold hover:underline"
+              >
+                Login here
+              </Link>
+            </p>
           </form>
         </div>
       </div>

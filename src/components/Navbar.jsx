@@ -102,9 +102,6 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="mr-4 text-[#D9CAC2] cursor-pointer">
-                Login
-              </Link>
               <Link to="/register" className="text-[#D9CAC2] cursor-pointer">
                 Register
               </Link>

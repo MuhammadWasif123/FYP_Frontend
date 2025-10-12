@@ -10,6 +10,7 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(false);
 
 
+  console.log("This is the user getting",user);
 // States for a Single Report Fetch
 const [selectedReport,setSelectedReport] =useState(null);
 const [detailLoading,setDetailLoading]=useState(false);

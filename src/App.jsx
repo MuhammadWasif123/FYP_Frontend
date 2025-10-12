@@ -15,6 +15,7 @@ import LoginPage from "./pages/LoginPage";
 import ReportCrimePage from "./pages/ReportCrimePage";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";  // 👉 Example admin page
+import EditProfile from "./pages/EditProfile";
 // import AdminReportsPage from "./pages/AdminReportsPage"; // 👉 Example admin reports page
 
 const App = () => {
@@ -46,7 +47,7 @@ const App = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/report-crime" element={<ReportCrimePage />} />
             <Route path="/dashboard" element={<UserDashboard />} />
-            
+            <Route path="/edit-profile" element={<EditProfile/>} />
           </Route>
 
           {/* ✅ Admin-only Routes (extra protection with role check) */}
@@ -56,6 +57,8 @@ const App = () => {
             <Route path="/admin" element={<AdminDashboard />} />
             {/* <Route path="/admin/reports" element={<AdminReportsPage />} /> */}
           </Route>
+
+         
 
           {/* ✅ Catch-all for unknown routes */}
           <Route path="*" element={<Navigate to="/" />} />

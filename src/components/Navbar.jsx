@@ -65,6 +65,18 @@ const Navbar = () => {
                 </Link>
               )}
             </li>
+
+              <li>
+              {/* 👇 Only show if logged in */}
+              {user && user.role !== "admin" && (
+                <Link
+                  to="/edit-profile"
+                  className="block py-2 pl-3 pr-4 text-[#D9CAC2] rounded lg:p-0"
+                >
+                  Edit Profile
+                </Link>
+              )}
+            </li>
         
             {/* Admin Dashboard Link */}
             <li>

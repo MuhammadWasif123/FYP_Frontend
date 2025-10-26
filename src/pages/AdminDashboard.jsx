@@ -4,6 +4,8 @@ import axios from "axios";
 import AdminReportsTable from "../components/AdminComponent/AdminReportsTable";
 import ReportModal from "../components/UserDashboard/ReportModal";
 import AdminUsersTable from "../components/AdminComponent/AdminUsersTable";
+import Papa from "papaparse";
+import toast from "react-hot-toast";
 
 const STATUS_OPTIONS = [
   "Pending",
@@ -20,7 +22,79 @@ const AdminDashboard = () => {
   const [updateReport, setUpdateReport] = useState(null); // for status update modal
   const [newStatus, setNewStatus] = useState("Pending");
   const [users, setUsers] = useState([]);
+  const [csvFile, setCsvFile] = useState(null);
+  const [csvData, setCsvEData] = useState([]);
 
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return toast.error("Please Upload a CSV File");
+
+    setCsvFile(file);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const parsedData = results.data.map((row) => {
+          if (row.area_cord) {
+            try {
+              
+              if (typeof row.area_cord === "string") {
+                row.area_cord = row.area_cord.trim().startsWith("[")
+                  ? row.area_cord
+                  : JSON.stringify(row.area_cord);
+              } else {
+                row.area_cord = JSON.stringify(row.area_cord);
+              }
+            } catch (err) {
+              console.error("Invalid area_cord format:", row.area_cord);
+              row.area_cord = null; 
+            }
+          } else {
+            row.area_cord = null; 
+          }
+
+          return row;
+        });
+        // console.log("Parsed CSV Data:", parsedData);
+
+        setCsvEData(parsedData);
+        toast.success("CSV Parsed Successfully");
+      },
+      error: (err) => {
+        console.error("Error Parsing CSV:", err);
+        toast.error("Failed to parse CSV File");
+      },
+    });
+  };
+
+  const handleSubmitCSV = async () => {
+    if (!csvData.length) return toast.error("Please Upload a CSV File First!");
+
+    console.log(
+      `Final Checking of CSV array of object before sending ${csvData}`
+    );
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3004/api/v1/authority/add/bulk",
+        csvData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      toast.success("File Uploaded Successfully");
+      console.log("Server Response: ", res);
+
+      setCsvFile(null);
+      setCsvEData([]);
+    } catch (err) {
+      console.error(err);
+      console.log(`The error checking from backend ${err.response?.data}`);
+    }
+  };
   // Fetch all reports User has added
   const fetchReports = async () => {
     setLoading(true);
@@ -116,26 +190,27 @@ const AdminDashboard = () => {
     }
   };
 
+  //   Admin Deleting Registered Users
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
 
-//   Admin Deleting Registered Users
-const handleDeleteUser = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this user?")) return;
+    try {
+      const res = await axios.delete(
+        `http://localhost:3004/api/v1/admin/user/delete/${id}`,
+        { withCredentials: true }
+      );
 
-  try {
-    const res = await axios.delete(
-      `http://localhost:3004/api/v1/admin/user/delete/${id}`,
-      { withCredentials: true }
-    );
+      alert(res.data.message || "User deleted successfully!");
 
-    alert(res.data.message || "User deleted successfully!");
-
-    // Update UI instantly
-    setUsers((prev) => prev.filter((u) => u.id !== id));
-  } catch (err) {
-    console.error("Delete user error:", err);
-    alert("Error deleting user: " + (err.response?.data?.message || err.message));
-  }
-};  
+      // Update UI instantly
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+    } catch (err) {
+      console.error("Delete user error:", err);
+      alert(
+        "Error deleting user: " + (err.response?.data?.message || err.message)
+      );
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6">
@@ -144,26 +219,40 @@ const handleDeleteUser = async (id) => {
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
         {/* Button to see all user reports */}
         <div className="flex justify-center">
+          <button
+            onClick={fetchReports}
+            disabled={loading}
+            className="bg-[#2b303a] text-white px-4 py-2 rounded disabled:opacity-60 cursor-pointer text-sm"
+          >
+            {loading ? "Loading…" : "See all user reports"}
+          </button>
+        </div>
+
+        {/* Button to see all users */}
         <button
-          onClick={fetchReports}
+          onClick={fetchUsers}
           disabled={loading}
           className="bg-[#2b303a] text-white px-4 py-2 rounded disabled:opacity-60 cursor-pointer text-sm"
         >
-          {loading ? "Loading…" : "See all user reports"}
+          {loading ? "Loading…" : "See all users"}
         </button>
       </div>
 
-      {/* Button to see all users */}
-      <button
-        onClick={fetchUsers}
-        disabled={loading}
-        className="bg-[#2b303a] text-white px-4 py-2 rounded disabled:opacity-60 cursor-pointer text-sm"
-      >
-        
-        {loading ? "Loading…" : "See all users"}
-      </button>
+      {/* CSV Upload Section */}
+      <div>
+        <input
+          type="file"
+          accept=".csv"
+          onChange={handleFileUpload}
+          className="border border-gray-300 p-2 rounded text-sm"
+        />
+        <button
+          onClick={handleSubmitCSV}
+          className="bg-[#2b303a] text-white px-3 py-2 rounded text-sm cursor-pointer"
+        >
+          Upload CSV
+        </button>
       </div>
-      {/* {msg && <div className="bg-gray-50 p-3 rounded text-sm">{msg}</div>} */}
 
       {/* Reports table */}
       <AdminReportsTable
@@ -185,7 +274,9 @@ const handleDeleteUser = async (id) => {
       )}
 
       {/* Users Table Only Active When users length greater than zero */}
-      {users.length > 0 && <AdminUsersTable users={users} onDeleteUser={handleDeleteUser} />}
+      {users.length > 0 && (
+        <AdminUsersTable users={users} onDeleteUser={handleDeleteUser} />
+      )}
 
       {/* Status update modal */}
       {updateReport && (

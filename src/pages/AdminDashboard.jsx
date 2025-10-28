@@ -24,6 +24,21 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [csvFile, setCsvFile] = useState(null);
   const [csvData, setCsvEData] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    station_name: "",
+    email: "",
+    sub_division: "",
+    station_lng: "",
+    station_lat: "",
+    district: "",
+    zone: "",
+    head_muharar_name: "",
+    head_muharar_phone: "",
+    station_map_url: "",
+    area_cord: "",
+    city: "",
+  });
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -38,7 +53,6 @@ const AdminDashboard = () => {
         const parsedData = results.data.map((row) => {
           if (row.area_cord) {
             try {
-              
               if (typeof row.area_cord === "string") {
                 row.area_cord = row.area_cord.trim().startsWith("[")
                   ? row.area_cord
@@ -48,10 +62,10 @@ const AdminDashboard = () => {
               }
             } catch (err) {
               console.error("Invalid area_cord format:", row.area_cord);
-              row.area_cord = null; 
+              row.area_cord = null;
             }
           } else {
-            row.area_cord = null; 
+            row.area_cord = null;
           }
 
           return row;
@@ -90,11 +104,26 @@ const AdminDashboard = () => {
 
       setCsvFile(null);
       setCsvEData([]);
-    } catch (err) {
-      console.error(err);
-      console.log(`The error checking from backend ${err.response?.data}`);
+    } catch (error) {
+      const backendErrorData = error.response?.data;
+      if (backendErrorData?.errors && backendErrorData.errors.length > 0) {
+        backendErrorData.errors.forEach((err) => {
+          toast.error(`${err.field}: ${err.message}`);
+        });
+      } else {
+        toast.error(backendErrorData?.message || "Something went wrong!");
+      }
+      setMessage(error.response?.data?.message || "Login Failed");
     }
   };
+
+  // Handle Input Change Function
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   // Fetch all reports User has added
   const fetchReports = async () => {
     setLoading(true);
@@ -159,6 +188,52 @@ const AdminDashboard = () => {
       setUsers([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Making API Integration Function Authrity Form Add
+
+  const handleAddAuthority = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3004/api/v1/authority/add",
+        formData,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      toast.success("Authority Added Successfully");
+
+      setShowModal(false);
+
+      console.log(
+        `This is the success response from authority add form api ${res}`
+      );
+
+      setFormData({
+        station_name: "",
+        email: "",
+        sub_division: "",
+        station_lng: "",
+        station_lat: "",
+        district: "",
+        zone: "",
+        head_muharar_name: "",
+        head_muharar_phone: "",
+        station_map_url: "",
+        area_cord: "",
+        city: "",
+      });
+    } catch (error) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to add authority");
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -238,20 +313,31 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* CSV Upload Section */}
+      {/* CSV Upload Section Adding Authority */}
       <div>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          className="border border-gray-300 p-2 rounded text-sm"
-        />
-        <button
-          onClick={handleSubmitCSV}
-          className="bg-[#2b303a] text-white px-3 py-2 rounded text-sm cursor-pointer"
-        >
-          Upload CSV
-        </button>
+        <div>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            className="border border-gray-300 p-2 rounded text-sm"
+          />
+          <button
+            onClick={handleSubmitCSV}
+            className="bg-[#2b303a] text-white px-3 py-2 rounded text-sm cursor-pointer"
+          >
+            Upload CSV
+          </button>
+        </div>
+
+        <div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-[#2b303a] text-[#fff] px-4 py-2 rounded cursor-pointer"
+          >
+            Add new Authority
+          </button>
+        </div>
       </div>
 
       {/* Reports table */}
@@ -312,6 +398,140 @@ const AdminDashboard = () => {
                 Update
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Form Modal for the Authority Add Form */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold mb-4">Add New Authority</h2>
+            <form onSubmit={handleAddAuthority} className="space-y-3">
+              <input
+                name="station_name"
+                value={formData.station_name}
+                onChange={handleInputChange}
+                placeholder="Station Name"
+                className="border p-2 rounded"
+                required
+              />
+
+              <input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Email"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="sub_division"
+                value={formData.sub_division}
+                onChange={handleInputChange}
+                placeholder="Sub Division"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                placeholder="City"
+                className="border p-2 rounded"
+                required
+              />
+
+              <input
+                name="district"
+                value={formData.district}
+                onChange={handleInputChange}
+                placeholder="District"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="zone"
+                value={formData.zone}
+                onChange={handleInputChange}
+                placeholder="Zone"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="station_lng"
+                value={formData.station_lng}
+                onChange={handleInputChange}
+                placeholder="Station Longitude"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="station_lat"
+                value={formData.station_lat}
+                onChange={handleInputChange}
+                placeholder="Station Latitude"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="head_muharar_name"
+                value={formData.head_muharar_name}
+                onChange={handleInputChange}
+                placeholder="Head Muharar Name"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="head_muharar_phone"
+                type="number"
+                value={formData.head_muharar_phone}
+                onChange={handleInputChange}
+                placeholder="Head Muharar Phone"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="station_map_url"
+                value={formData.station_map_url}
+                onChange={handleInputChange}
+                placeholder="Station Map URL"
+                className="border p-2 rounded"
+              />
+
+              <input
+                name="area_map_url"
+                value={formData.area_map_url}
+                onChange={handleInputChange}
+                placeholder="Area Map URL"
+                className="border p-2 rounded"
+              />
+
+              <textarea
+                name="area_cord"
+                value={formData.area_cord}
+                onChange={handleInputChange}
+                placeholder="Area Coordinates (e.g. [[[24.93,67.02],[24.94,67.03]]])"
+                className="border p-2 rounded col-span-2"
+                rows={4}
+              />
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-[#2b303a] text-white rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#2b303a] text-white rounded"
+                >
+                  Add
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
